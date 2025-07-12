@@ -8,9 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { trpc } from '@/utils/trpc';
-import { Globe, Phone, Mail, MapPin, Clock, AlertCircle } from 'lucide-react';
+import { Globe, Phone, Mail, MapPin, Clock } from 'lucide-react';
 import type { 
   Service, 
   Project, 
@@ -41,29 +40,28 @@ function App() {
   // Load all data on component mount
   const loadAllData = useCallback(async () => {
     try {
-      // Note: Using stub data as backend handlers are placeholders
-      const [servicesData, projectsData, caseStudiesData, contactDetailsData, homeContentData] = await Promise.all([
+      const [servicesData, projectsData, caseStudiesData, homeContentData] = await Promise.all([
         trpc.getServices.query(),
         trpc.getProjects.query(),
         trpc.getCaseStudies.query(),
-        trpc.getContactDetails.query(),
         trpc.getHomePageContent.query()
       ]);
 
-      // Since backend returns empty arrays/null, using stub data for demonstration
-      setServices(servicesData.length > 0 ? servicesData : STUB_SERVICES);
-      setProjects(projectsData.length > 0 ? projectsData : STUB_PROJECTS);
-      setCaseStudies(caseStudiesData.length > 0 ? caseStudiesData : STUB_CASE_STUDIES);
-      setContactDetails(contactDetailsData || STUB_CONTACT_DETAILS);
-      setHomePageContent(homeContentData || STUB_HOME_CONTENT);
+      setServices(servicesData);
+      setProjects(projectsData);
+      setCaseStudies(caseStudiesData);
+      setHomePageContent(homeContentData);
     } catch (error) {
       console.error('Failed to load data:', error);
-      // Fallback to stub data on error
-      setServices(STUB_SERVICES);
-      setProjects(STUB_PROJECTS);
-      setCaseStudies(STUB_CASE_STUDIES);
-      setContactDetails(STUB_CONTACT_DETAILS);
-      setHomePageContent(STUB_HOME_CONTENT);
+    }
+
+    // Load contact details separately with error handling
+    try {
+      const contactDetailsData = await trpc.getContactDetails.query();
+      setContactDetails(contactDetailsData);
+    } catch (error) {
+      console.error('Failed to load contact details:', error);
+      setContactDetails(null);
     }
   }, []);
 
@@ -169,17 +167,7 @@ function App() {
         </div>
       </nav>
 
-      {/* Stub Data Notice */}
-      <div className="container mx-auto px-4 py-2">
-        <Alert className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {currentLanguage === 'en' 
-              ? 'Note: Currently displaying demo data as backend handlers are placeholders.' 
-              : 'Note: Affichage de données de démonstration car les gestionnaires backend sont des espaces réservés.'}
-          </AlertDescription>
-        </Alert>
-      </div>
+
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
@@ -539,146 +527,5 @@ function App() {
     </div>
   );
 }
-
-// STUB DATA - Used because backend handlers are placeholders
-const STUB_SERVICES: Service[] = [
-  {
-    id: 1,
-    title_en: "Brand Identity Design",
-    title_fr: "Conception d'identité de marque",
-    description_en: "Complete brand identity packages including logos, color schemes, typography, and brand guidelines to establish your unique market presence.",
-    description_fr: "Packages d'identité de marque complets comprenant logos, schémas de couleurs, typographie et directives de marque pour établir votre présence unique sur le marché.",
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 2,
-    title_en: "Digital Printing Services",
-    title_fr: "Services d'impression numérique",
-    description_en: "High-quality digital printing for business cards, brochures, posters, and marketing materials with fast turnaround times.",
-    description_fr: "Impression numérique de haute qualité pour cartes de visite, brochures, affiches et matériel marketing avec des délais de livraison rapides.",
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 3,
-    title_en: "Package Design",
-    title_fr: "Conception d'emballage",
-    description_en: "Creative packaging solutions that protect your products while creating memorable unboxing experiences for customers.",
-    description_fr: "Solutions d'emballage créatives qui protègent vos produits tout en créant des expériences de déballage mémorables pour les clients.",
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 4,
-    title_en: "Web Graphics & UI Design",
-    title_fr: "Graphismes web et conception UI",
-    description_en: "Custom web graphics, user interface elements, and digital assets optimized for online platforms and social media.",
-    description_fr: "Graphismes web personnalisés, éléments d'interface utilisateur et ressources numériques optimisés pour les plateformes en ligne et les médias sociaux.",
-    created_at: new Date(),
-    updated_at: new Date()
-  }
-];
-
-const STUB_PROJECTS: Project[] = [
-  {
-    id: 1,
-    title_en: "Artisan Bakery Rebranding",
-    title_fr: "Rebranding d'une boulangerie artisanale",
-    description_en: "Complete visual identity redesign for a local artisan bakery, including new logo, packaging, and storefront signage.",
-    description_fr: "Refonte complète de l'identité visuelle d'une boulangerie artisanale locale, incluant nouveau logo, emballage et signalétique de magasin.",
-    category: 'graphic_design',
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 2,
-    title_en: "Corporate Annual Report",
-    title_fr: "Rapport annuel d'entreprise",
-    description_en: "Design and print production of a 64-page annual report with custom infographics and professional layout.",
-    description_fr: "Conception et production d'impression d'un rapport annuel de 64 pages avec infographies personnalisées et mise en page professionnelle.",
-    category: 'digital_printing',
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 3,
-    title_en: "Eco-Friendly Product Line",
-    title_fr: "Gamme de produits écologiques",
-    description_en: "Sustainable packaging design for a new line of eco-friendly household products with biodegradable materials.",
-    description_fr: "Conception d'emballage durable pour une nouvelle gamme de produits ménagers écologiques avec des matériaux biodégradables.",
-    category: 'packaging',
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 4,
-    title_en: "Tech Startup Marketing Kit",
-    title_fr: "Kit marketing pour startup tech",
-    description_en: "Complete marketing collateral including business cards, presentation templates, and booth graphics for trade shows.",
-    description_fr: "Matériel marketing complet incluant cartes de visite, modèles de présentation et graphismes de stand pour salons professionnels.",
-    category: 'graphic_design',
-    created_at: new Date(),
-    updated_at: new Date()
-  }
-];
-
-const STUB_CASE_STUDIES: CaseStudy[] = [
-  {
-    id: 1,
-    title_en: "Organic Farm Brand Transformation",
-    title_fr: "Transformation de marque d'une ferme biologique",
-    description_en: "A comprehensive rebranding project that increased customer engagement and sales.",
-    description_fr: "Un projet de rebranding complet qui a augmenté l'engagement client et les ventes.",
-    client_name_en: "Green Valley Organic Farm",
-    client_name_fr: "Ferme biologique Green Valley",
-    challenge_description_en: "The client needed to modernize their brand to appeal to younger demographics while maintaining their heritage and trust with existing customers.",
-    challenge_description_fr: "Le client devait moderniser sa marque pour séduire les jeunes générations tout en préservant son héritage et la confiance de ses clients existants.",
-    solution_description_en: "We created a fresh, modern identity that honored their 50-year history while appealing to health-conscious millennials through vibrant colors and contemporary typography.",
-    solution_description_fr: "Nous avons créé une identité fraîche et moderne qui honorait leurs 50 ans d'histoire tout en séduisant les millennials soucieux de leur santé grâce à des couleurs vives et une typographie contemporaine.",
-    results_description_en: "40% increase in social media engagement, 25% boost in direct sales, and successful expansion into 3 new markets within 6 months.",
-    results_description_fr: "Augmentation de 40% de l'engagement sur les médias sociaux, hausse de 25% des ventes directes et expansion réussie sur 3 nouveaux marchés en 6 mois.",
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 2,
-    title_en: "Restaurant Chain Menu Redesign",
-    title_fr: "Refonte de menu pour chaîne de restaurants",
-    description_en: "Strategic menu design that improved customer experience and increased average order value.",
-    description_fr: "Conception stratégique de menu qui a amélioré l'expérience client et augmenté la valeur moyenne des commandes.",
-    client_name_en: "Bistro Express",
-    client_name_fr: "Bistro Express",
-    challenge_description_en: "The restaurant chain had outdated menus that were difficult to read and didn't effectively highlight their premium offerings.",
-    challenge_description_fr: "La chaîne de restaurants avait des menus obsolètes difficiles à lire et qui ne mettaient pas efficacement en valeur leurs offres premium.",
-    solution_description_en: "We redesigned the menu layout using visual hierarchy, appetizing photography, and strategic placement of high-margin items.",
-    solution_description_fr: "Nous avons repensé la mise en page du menu en utilisant une hiérarchie visuelle, une photographie appétissante et un placement stratégique des articles à forte marge.",
-    results_description_en: "18% increase in average order value, 30% improvement in customer satisfaction scores, and reduced ordering time by 15%.",
-    results_description_fr: "Augmentation de 18% de la valeur moyenne des commandes, amélioration de 30% des scores de satisfaction client et réduction du temps de commande de 15%.",
-    created_at: new Date(),
-    updated_at: new Date()
-  }
-];
-
-const STUB_CONTACT_DETAILS: ContactDetails = {
-  id: 1,
-  email: "contact@creacom.ca",
-  phone: "+1 (514) 555-0123",
-  address: "123 Rue Saint-Denis, Montréal, QC H2X 3K8",
-  working_hours_en: "Monday to Friday: 9:00 AM - 6:00 PM",
-  working_hours_fr: "Lundi au vendredi : 9h00 - 18h00",
-  updated_at: new Date()
-};
-
-const STUB_HOME_CONTENT: HomePageContent = {
-  id: 1,
-  hero_title_en: "Creative Solutions for Your Brand",
-  hero_title_fr: "Solutions créatives pour votre marque",
-  hero_subtitle_en: "Professional graphic design and printing services that bring your vision to life with exceptional quality and creativity.",
-  hero_subtitle_fr: "Services professionnels de conception graphique et d'impression qui donnent vie à votre vision avec une qualité et une créativité exceptionnelles.",
-  about_section_en: "At Crea'com, we are passionate about transforming ideas into compelling visual experiences. With over 15 years of expertise in graphic design and printing, we help businesses of all sizes establish their unique identity and communicate effectively with their target audience. Our team combines creative excellence with technical precision to deliver outstanding results that exceed expectations.",
-  about_section_fr: "Chez Crea'com, nous sommes passionnés par la transformation d'idées en expériences visuelles convaincantes. Avec plus de 15 ans d'expertise en conception graphique et impression, nous aidons les entreprises de toutes tailles à établir leur identité unique et à communiquer efficacement avec leur public cible. Notre équipe combine l'excellence créative avec la précision technique pour offrir des résultats exceptionnels qui dépassent les attentes.",
-  updated_at: new Date()
-};
 
 export default App;
