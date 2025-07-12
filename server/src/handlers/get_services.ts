@@ -1,9 +1,17 @@
 
+import { db } from '../db';
+import { servicesTable } from '../db/schema';
 import { type Service } from '../schema';
 
 export const getServices = async (): Promise<Service[]> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is fetching all services from the database
-  // with their multilingual content.
-  return Promise.resolve([]);
+  try {
+    const results = await db.select()
+      .from(servicesTable)
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch services:', error);
+    throw error;
+  }
 };

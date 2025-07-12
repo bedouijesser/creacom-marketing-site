@@ -1,9 +1,20 @@
 
+import { db } from '../db';
+import { caseStudyImagesTable } from '../db/schema';
 import { type CaseStudyImage } from '../schema';
+import { eq, asc } from 'drizzle-orm';
 
 export const getCaseStudyImages = async (caseStudyId: number): Promise<CaseStudyImage[]> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is fetching all images for a specific case study
-  // ordered by display_order.
-  return Promise.resolve([]);
+  try {
+    const result = await db.select()
+      .from(caseStudyImagesTable)
+      .where(eq(caseStudyImagesTable.case_study_id, caseStudyId))
+      .orderBy(asc(caseStudyImagesTable.display_order))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch case study images:', error);
+    throw error;
+  }
 };

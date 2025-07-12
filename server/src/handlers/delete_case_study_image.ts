@@ -1,6 +1,20 @@
 
+import { db } from '../db';
+import { caseStudyImagesTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
+
 export const deleteCaseStudyImage = async (id: number): Promise<{ success: boolean }> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is deleting a case study image from the database by ID.
-  return Promise.resolve({ success: true });
+  try {
+    // Delete the case study image by ID
+    const result = await db.delete(caseStudyImagesTable)
+      .where(eq(caseStudyImagesTable.id, id))
+      .returning()
+      .execute();
+
+    // Return success based on whether any rows were deleted
+    return { success: result.length > 0 };
+  } catch (error) {
+    console.error('Case study image deletion failed:', error);
+    throw error;
+  }
 };

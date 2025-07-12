@@ -1,9 +1,23 @@
 
+import { db } from '../db';
+import { caseStudiesTable } from '../db/schema';
 import { type CaseStudy } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const getCaseStudy = async (id: number): Promise<CaseStudy | null> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is fetching a single case study by ID from the database
-  // with its multilingual content and associated images.
-  return Promise.resolve(null);
+  try {
+    const results = await db.select()
+      .from(caseStudiesTable)
+      .where(eq(caseStudiesTable.id, id))
+      .execute();
+
+    if (results.length === 0) {
+      return null;
+    }
+
+    return results[0];
+  } catch (error) {
+    console.error('Failed to get case study:', error);
+    throw error;
+  }
 };

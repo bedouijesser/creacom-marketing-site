@@ -1,15 +1,23 @@
 
+import { db } from '../db';
+import { contactFormSubmissionsTable } from '../db/schema';
 import { type CreateContactFormSubmissionInput, type ContactFormSubmission } from '../schema';
 
 export const createContactFormSubmission = async (input: CreateContactFormSubmissionInput): Promise<ContactFormSubmission> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is creating a new contact form submission
-  // and persisting it in the database for admin review.
-  return Promise.resolve({
-    id: 0, // Placeholder ID
-    name: input.name,
-    email: input.email,
-    message: input.message,
-    created_at: new Date()
-  } as ContactFormSubmission);
+  try {
+    // Insert contact form submission record
+    const result = await db.insert(contactFormSubmissionsTable)
+      .values({
+        name: input.name,
+        email: input.email,
+        message: input.message
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Contact form submission creation failed:', error);
+    throw error;
+  }
 };
