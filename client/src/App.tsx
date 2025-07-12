@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { trpc } from '@/utils/trpc';
-import { Globe, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Globe, Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageSquare } from 'lucide-react';
 import type { 
   Service, 
   Project, 
@@ -103,16 +103,16 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-md border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">C</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Crea'com</h1>
-                <p className="text-sm text-gray-600">
+                <h1 className="text-3xl font-bold text-gray-900">Crea'com</h1>
+                <p className="text-sm text-gray-500">
                   {currentLanguage === 'en' ? 'Graphic Design & Printing' : 'Conception graphique & impression'}
                 </p>
               </div>
@@ -120,19 +120,23 @@ function App() {
             
             <div className="flex items-center space-x-4">
               <Button
-                variant={currentLanguage === 'en' ? 'default' : 'outline'}
+                variant="ghost"
                 size="sm"
                 onClick={() => setCurrentLanguage('en')}
-                className="flex items-center space-x-1"
+                className={`flex items-center space-x-1 text-gray-700 hover:text-gray-900 ${
+                  currentLanguage === 'en' ? 'font-semibold text-blue-600' : ''
+                }`}
               >
                 <Globe className="w-4 h-4" />
                 <span>EN</span>
               </Button>
               <Button
-                variant={currentLanguage === 'fr' ? 'default' : 'outline'}
+                variant="ghost"
                 size="sm"
                 onClick={() => setCurrentLanguage('fr')}
-                className="flex items-center space-x-1"
+                className={`flex items-center space-x-1 text-gray-700 hover:text-gray-900 ${
+                  currentLanguage === 'fr' ? 'font-semibold text-blue-600' : ''
+                }`}
               >
                 <Globe className="w-4 h-4" />
                 <span>FR</span>
@@ -507,20 +511,70 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-16">
+      <footer className="bg-slate-900 text-white py-12 mt-20">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">C</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
+            {/* Brand Info */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">C</span>
+                </div>
+                <span className="text-lg font-bold">Crea'com</span>
               </div>
-              <span className="text-xl font-bold">Crea'com</span>
+              <p className="text-gray-400">
+                {currentLanguage === 'en' 
+                  ? '© 2024 Crea\'com. All rights reserved.' 
+                  : '© 2024 Crea\'com. Tous droits réservés.'}
+              </p>
             </div>
-            <p className="text-gray-400">
-              {currentLanguage === 'en' 
-                ? '© 2024 Crea\'com. All rights reserved.' 
-                : '© 2024 Crea\'com. Tous droits réservés.'}
-            </p>
+
+            {/* Contact Details */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">
+                {currentLanguage === 'en' ? 'Contact' : 'Contact'}
+              </h3>
+              {contactDetails && (
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <Mail className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-300">{contactDetails.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-300">{contactDetails.phone}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-300">{contactDetails.address}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-300">
+                      {getLocalizedText(contactDetails.working_hours_en, contactDetails.working_hours_fr)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Social Media */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">
+                {currentLanguage === 'en' ? 'Follow Us' : 'Suivez-nous'}
+              </h3>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <MessageSquare className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
